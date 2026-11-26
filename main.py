@@ -941,8 +941,14 @@ def main():
     size = write_png(path, W, H, page.px)
     local_dir = os.path.join(HERE, "output")
     if os.path.abspath(out_dir) != os.path.abspath(local_dir):
-        os.makedirs(local_dir, exist_ok=True)
-        write_png(os.path.join(local_dir, "entry.png"), W, H, page.px)
+        try:
+            os.makedirs(local_dir, exist_ok=True)
+            write_png(os.path.join(local_dir, "entry.png"), W, H, page.px)
+        except OSError:
+            # Graded runs mount the repository read-only; the entry in
+            # $MAKEFUN_OUTPUT_DIR is already written, so a local copy
+            # that cannot be written must not fail the run.
+            pass
     print("wrote %s (%d bytes, %dx%d)" % (path, size, W, H))
     return 0
 
